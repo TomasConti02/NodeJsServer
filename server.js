@@ -37,5 +37,18 @@ app.post('/api/invert', (req, res) => {
   invertLogs.push(`Input: ${text} → Output: ${reversed}`);
   res.json({ original: text, reversed });//json di risposta al client che chiama api
 });
+// ----------------------------------------------------
+// API #3: Info Utente Fissa (MODIFICATA: GET /api/userInfo)
+// ----------------------------------------------------
+app.get('/api/userInfo', (req, res) => {
+  // Valori fissati come richiesto
+  const userInfo = {
+    nome: "Tomas",
+    cognome: "Conti"
+  };
+  
+  // Risposta JSON al client
+  res.json(userInfo);
+});
 //bound applicazione
 app.listen(PORT, () => { console.log(`Server in ascolto su http://localhost:${PORT}`); });
