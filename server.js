@@ -88,6 +88,55 @@ app.get('/api/userInfo', (req, res) => {
   res.json(userInfo);
 });
 
+const users = new Map();
+
+function createSomeUsers() {
+
+    const user1 = {
+        nome: "Tomas",
+        cognome: "Conti"
+    };
+    users.set("1", user1);
+
+    const user2 = {
+        nome: "Enrico",
+        cognome: "Fermi"
+    };
+    users.set("2", user2);
+
+    const user3 = {
+        nome: "Rita",
+        cognome: "Levi Montalcini"
+    };
+    users.set("3", user3);
+
+    const user4 = {
+        nome: "Giovanni",
+        cognome: "Parisi"
+    };
+    users.set("4", user4);
+
+    const user5 = {
+        nome: "Marie",
+        cognome: "Curie"
+    };
+    users.set("5", user5);
+
+    console.log(users.get("5"));
+
+}
+
+// GET /api/userInfo/:id - Retrieve user by id
+app.get('/api/userInfo/:id', (req, res) => {
+    const user = users.get(req.params.id);
+
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    res.json(user);
+});
+
 // In-memory storage for tickets
 const tickets = new Map();
 let ticketCounter = 100000;
@@ -318,6 +367,8 @@ app.get('/api/tickets', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
+    createSomeUsers();
+    console.log('users created');
     console.log(`Server in ascolto su http://localhost:${PORT}`);
     console.log(`\nEndpoints:`);
     console.log(`  POST /api/tickets.json - Create ticket (JSON)`);
