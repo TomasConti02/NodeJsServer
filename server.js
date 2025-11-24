@@ -50,5 +50,13 @@ app.get('/api/userInfo', (req, res) => {
   // Risposta JSON al client
   res.json(userInfo);
 });
+// ----------------------------------------------------
+// POST -> API POST feedback #4 
+// ----------------------------------------------------
+app.post('/api/feedback', (req, res) => {
+  const { message } = req.body; 
+  invertLogs.push(`message: ${message}`)
+});
+
 //bound applicazione
 app.listen(PORT, () => { console.log(`Server in ascolto su http://localhost:${PORT}`); });
