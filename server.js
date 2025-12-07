@@ -58,10 +58,57 @@ app.use(bodyParser.text({ type: 'application/xml' }));
 const invertLogs = [];
 const feedbackLogs = []; // log in memoria per feedback per il recupero
 // La get su root deve restituire una semplice pagina di log al browser client 
+// La get su root deve restituire i log e la lista dei tickets
+// La get su root deve restituire la lista dei tickets e i feedback
 app.get('/', (req, res) => {
-  res.send(` //risposta alla get
-    <h1>Log API /api/invert</h1>
-    <pre>${invertLogs.join('\n')}</pre>
+  // --- 1. Gestione TICKETS ---
+  const ticketsList = Array.from(tickets.values());
+
+  const ticketsHtml = ticketsList.map(t => `
+    <div style="border: 1px solid #ddd; border-left: 5px solid #007bff; margin: 10px 0; padding: 15px; background-color: #fff; border-radius: 4px;">
+      <div style="font-size: 1.2em; font-weight: bold; margin-bottom: 5px;">${t.subject} <span style="font-size: 0.8em; color: #666;">(#${t.id})</span></div>
+      <div><strong>Autore:</strong> ${t.name} (<a href="mailto:${t.email}">${t.email}</a>)</div>
+      <div style="margin-top: 10px; padding: 10px; background: #f9f9f9; font-style: italic;">"${t.message.content}"</div>
+      <div style="margin-top: 5px; font-size: 0.85em; color: #888;">Creato il: ${new Date(t.createdAt).toLocaleString()}</div>
+    </div>
+  `).join('');
+
+  // --- 2. Gestione FEEDBACK ---
+  // feedbackLogs è un array di stringhe (definito globalmente nel tuo codice)
+  const feedbackHtml = feedbackLogs.map(f => `
+    <div style="padding: 8px; border-bottom: 1px solid #eee;">
+      📝 ${f}
+    </div>
+  `).join('');
+
+  // --- 3. Invio HTML ---
+  res.send(`
+    <html>
+      <head>
+        <title>Admin Dashboard</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f0f2f5; max-width: 900px; margin: 0 auto; }
+            h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; margin-top: 30px; }
+            .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; }
+            .empty { color: #777; font-style: italic; }
+        </style>
+      </head>
+      <body>
+        
+        <div class="section">
+            <h1>🎫 Tickets Recenti (${ticketsList.length})</h1>
+            ${ticketsList.length > 0 ? ticketsHtml : '<p class="empty">Nessun ticket presente nel sistema.</p>'}
+        </div>
+
+        <div class="section">
+            <h1>💬 Feedback Utenti (${feedbackLogs.length})</h1>
+            <div style="background-color: #eef; padding: 10px; border-radius: 5px;">
+                ${feedbackLogs.length > 0 ? feedbackHtml : '<p class="empty">Nessun feedback ricevuto.</p>'}
+            </div>
+        </div>
+
+      </body>
+    </html>
   `);
 });
 // API POST invert string
