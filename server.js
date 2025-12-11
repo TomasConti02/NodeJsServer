@@ -1,18 +1,10 @@
 /*
-curl -X POST https://nodejsserver-l0yd.onrender.com/api/invert      -H "Content-Type: application/json"      -d '{"text":"Finocchietto"}'
-sudo apt install nodejs npm -y -> su ubuntu 22.04 installiamo ambiente run time nodejs e gestore pacchetti npm(simile a pip)
 
-npm init -> creo file fondamentale di ogni progetto Node.js: package.json.
+Per installare e provare il server:
+ npm install express body-parser xml2js multer
+ node server.js
 
-package.json: È un file di configurazione in formato JSON che contiene metadati sul 
-tuo progetto (nome, versione, autore, licenza) e, soprattutto, l'elenco di tutte 
-le dipendenze (le librerie esterne necessarie, come Express) e gli script di avvio.
-
-npm install express body-parser xml2js multer
-
- node server.js -> facciamo partire tutto
-
- per provare le osTicket API:
+Per provare le osTicket API:
  JSON Example:
 curl -X POST http://localhost:3000/api/tickets.json \
   -H "Content-Type: application/json" \
@@ -45,7 +37,7 @@ import bodyParser from 'body-parser';
 import xml2js from 'xml2js';
 
 
-const PORT = 3000; //porta di ascolto e aggancio 
+const PORT = 3000; //porta di ascolto
 app.use(express.json()); //middleware di gestione POST body in formato json
 
 // Middleware
@@ -53,12 +45,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text({ type: 'application/xml' }));
 
-//posso raccogliere le richieste con req.body
 // Log in memoria
 const invertLogs = [];
 const feedbackLogs = []; // log in memoria per feedback per il recupero
-// La get su root deve restituire una semplice pagina di log al browser client 
-// La get su root deve restituire i log e la lista dei tickets
+
 // La get su root deve restituire la lista dei tickets e i feedback
 app.get('/', (req, res) => {
   // --- 1. Gestione TICKETS ---
@@ -111,7 +101,8 @@ app.get('/', (req, res) => {
     </html>
   `);
 });
-// API POST invert string
+
+// API POST invert string - semplice API di test, non collegata al progetto chatbot
 app.post('/api/invert', (req, res) => {
   const { text } = req.body; //prendo il body della request
   if (typeof text !== 'string') {
@@ -122,8 +113,9 @@ app.post('/api/invert', (req, res) => {
   invertLogs.push(`Input: ${text} → Output: ${reversed}`);
   res.json({ original: text, reversed });//json di risposta al client che chiama api
 });
+
 // ----------------------------------------------------
-// API #3: Info Utente Fissa (MODIFICATA: GET /api/userInfo)
+// API #3: Info Utente (MODIFICATA: GET /api/userInfo)
 // ----------------------------------------------------
 app.get('/api/userInfo', (req, res) => {
   // Valori fissati come richiesto
@@ -397,7 +389,7 @@ app.post('/api/tickets.xml', async (req, res) => {
     }
 });
 
-// GET /api/tickets/:id - Retrieve ticket (bonus endpoint for testing)
+// GET /api/tickets/:id - Retrieve ticket - per testing
 app.get('/api/tickets/:id', (req, res) => {
     const ticket = tickets.get(req.params.id);
 
@@ -408,7 +400,7 @@ app.get('/api/tickets/:id', (req, res) => {
     res.json(ticket);
 });
 
-// GET /api/tickets - List all tickets (bonus endpoint for testing)
+// GET /api/tickets - List all tickets - per testing e display sulla pagina web
 app.get('/api/tickets', (req, res) => {
     res.json(Array.from(tickets.values()));
 });
